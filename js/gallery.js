@@ -64,40 +64,43 @@ const images = [
   },
 ];
 
-const galleryContainer = document.querySelector(".gallery");
-const galleryMarkup = images
-  .map(({ preview, original, description }) => {
-    return `
-      <li class="gallery-item">
-        <a class="gallery-link" href="${original}">
-          <img
-            class="gallery-image"
-            src="${preview}"
-            data-source="${original}"
-            alt="${description}"
-          />
-        </a>
-      </li>
-    `;
-  })
-  .join("");
+const gallery = document.querySelector(".gallery");
 
-galleryContainer.insertAdjacentHTML("beforeend", galleryMarkup);
 
-galleryContainer.addEventListener("click", onGalleryItemClick);
+function createGalleryMarkup(images) {
+  return images
+    .map(
+      (image) => `
+  <li class="gallery-item">
+    <a class="gallery-link" href="${image.original}">
+      <img
+        class="gallery-image"
+        src="${image.preview}"
+        data-source="${image.original}"
+        alt="${image.description}"
+      />
+    </a>
+  </li>`
+    )
+    .join("");
+}
 
-function onGalleryItemClick(event) {
-  event.preventDefault();
 
-  const isImage = event.target.classList.contains("gallery-image");
-  if (!isImage) return;
+gallery.insertAdjacentHTML("beforeend", createGalleryMarkup(images));
 
-  const largeImageURL = event.target.dataset.source;
 
-  // Ініціалізація модального вікна
+gallery.addEventListener("click", function (event) {
+  event.preventDefault(); 
+
+  const clickedImage = event.target;
+
+  if (clickedImage.nodeName !== "IMG") return; 
+
+  const originalSrc = clickedImage.dataset.source;
+
   const instance = basicLightbox.create(`
-    <img src="${largeImageURL}" width="800" height="600">
+    <img src="${originalSrc}" width="800" height="600">
   `);
 
   instance.show();
-}
+});
